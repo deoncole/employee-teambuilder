@@ -1,0 +1,29 @@
+{
+  "dependencies": {
+    "inquirer": "^8.2.2"
+  },
+  "devDependencies": {
+    "jest": "^27.5.1"
+  },
+  "name": "employee-teambuilder",
+  "version": "1.0.0",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deoncole/employee-teambuilder.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/deoncole/employee-teambuilder/issues"
+  },
+  "homepage": "https://github.com/deoncole/employee-teambuilder#readme",
+  "description": ""
+}

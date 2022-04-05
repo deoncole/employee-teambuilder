@@ -6,8 +6,6 @@ test("gets the employee's name", () => {
     const employee2 = new Employee('Vegeta', '1', 'dbz@email.com');
   
     expect(empName).toEqual(employee2.name);
-    
-    
   });
 
   test("gets the employee's ID", () => {

@@ -28,14 +28,18 @@ function validateEmail(emailInput){
     }
  };
 
+ // constants to be used as empty arrays to hold the team member objects
+ const engTeam = [];
+ const internTeam = [];
+
  //function to add team member or quit
 function addTeamMember(addMember){
-    switch (addMember.team_list){
+    switch (addMember.next_to_add){
         case 'Engineer':
-            engineerPrompt()
+            engineerPrompt(engTeam)
             break;
         case 'Intern':
-            internPrompt()
+            internPrompt(internTeam)
             break;
         default:
             console.log('you are Done')
@@ -79,7 +83,7 @@ const managerPrompt = () => {
         },
         {
             type: 'list',
-            name: 'team_list',
+            name: 'next_to_add',
             message: 'Add a team member.',
             choices: ['Engineer', 'Intern', "Done"],
         },
@@ -90,12 +94,16 @@ const managerPrompt = () => {
 };
 
 // prompts to add a Engineer
-const engineerPrompt = () => {
+const engineerPrompt = engTeam => {
     console.log(`
     ==================
     Add a New Engineer
     ==================
   `);
+    // conditional to check if an engineer has been added if not create an empty array
+    if(!engTeam){
+        engTeam = [];
+    }
     return inquirer.prompt([
         {
             type: 'input',
@@ -135,23 +143,28 @@ const engineerPrompt = () => {
         },
         {
             type: 'list',
-            name: 'team_list',
+            name: 'next_to_add',
             message: 'Add a team member.',
             choices: ['Engineer', 'Intern', "Done"],
         },
     ])
     .then((addMember) => {
+        engTeam.push(addMember);
+        console.log(engTeam);
         addTeamMember(addMember);
     });
 };
 
 // prompts to add a Intern
-const internPrompt = () => {
+const internPrompt = internTeam => {
     console.log(`
     =================
     Add a New Intern
     =================
   `);
+    if(!internTeam){
+        internTeam = [];
+    }
     return inquirer.prompt([
         {
             type: 'input',
@@ -191,12 +204,14 @@ const internPrompt = () => {
         },
         {
             type: 'list',
-            name: 'team_list',
+            name: 'next_to_add',
             message: 'Add a team member.',
             choices: ['Engineer', 'Intern', "Done"],
         },
     ])
     .then((addMember) => {
+        internTeam.push(addMember);
+        console.log(internTeam);
         addTeamMember(addMember);
     });
 }

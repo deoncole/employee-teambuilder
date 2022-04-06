@@ -19,7 +19,7 @@ function validateEmail(emailInput){
  };
 
  // function to validate the office number in the prompt
-function validateOffNumber(offNumInput){
+ function validateOffNumber(offNumInput){
     const correctNumInput = offNumInput.match(/^([01]{1})?[\-\.\s]?\(?(\d{3})\)?[\-\.\s]?(\d{3})[\-\.\s]?(\d{4})\s?((?:#|ext\.?\s?|x\.?\s?){1}(?:\d+)?)?$/i);
     if (correctNumInput) {
         return true;
@@ -28,8 +28,24 @@ function validateOffNumber(offNumInput){
     }
  };
 
-// create inquirer prompts for the user
-const teamPrompt = () => {
+ //function to add team member or quit
+function addTeamMember(addMember){
+    switch (addMember.team_list){
+        case 'Engineer':
+            engineerPrompt()
+            break;
+        case 'Intern':
+            internPrompt()
+            break;
+        default:
+            console.log('you are Done')
+            break;
+    }
+};
+
+
+// create inquirer prompts for the team manager
+const managerPrompt = () => {
     return inquirer.prompt([
         {
             type: 'input',
@@ -69,17 +85,120 @@ const teamPrompt = () => {
         },
     ])
     .then((addMember) => {
-        switch (addMember.team_list){
-            case 'Engineer':
-                break;
-            case 'Intern':
-                console.log('you picked Intern')
-                break;
-            default:
-                console.log('you are Done')
-                break;
-        }
+        addTeamMember(addMember);
     })
 };
 
-teamPrompt();
+// prompts to add a Engineer
+const engineerPrompt = () => {
+    console.log(`
+    ==================
+    Add a New Engineer
+    ==================
+  `);
+    return inquirer.prompt([
+        {
+            type: 'input',
+            name: 'name',
+            message: "What is the Engineer's name? (Required)",
+            validate: nameInput => {
+                if(nameInput){
+                    return true;
+                } else {
+                    return "Please enter the Engineer's name"
+                }
+            }
+        },
+        {
+            type: 'input',
+            name: 'id',
+            message: "Enter a ID number for the Engineer (Required)",
+            validate: validateId,  
+        },
+        {
+            type: 'input',
+            name: 'email',
+            message: "Enter the Engineers's email address (Required)",
+            validate: validateEmail,
+        },
+        {
+            type: 'input',
+            name: 'github_username',
+            message: "Enter the Engineer's GitHub user name (Required)",
+            validate: gitInput => {
+                if(gitInput){
+                    return true;
+                } else {
+                    return "Please enter the Engineer's GitHub user name"
+                }
+            }
+        },
+        {
+            type: 'list',
+            name: 'team_list',
+            message: 'Add a team member.',
+            choices: ['Engineer', 'Intern', "Done"],
+        },
+    ])
+    .then((addMember) => {
+        addTeamMember(addMember);
+    });
+};
+
+// prompts to add a Intern
+const internPrompt = () => {
+    console.log(`
+    =================
+    Add a New Intern
+    =================
+  `);
+    return inquirer.prompt([
+        {
+            type: 'input',
+            name: 'name',
+            message: "What is the Intern's name? (Required)",
+            validate: nameInput => {
+                if(nameInput){
+                    return true;
+                } else {
+                    return "Please enter the Intern's name"
+                }
+            }
+        },
+        {
+            type: 'input',
+            name: 'id',
+            message: "Enter a ID number for the Intern (Required)",
+            validate: validateId,  
+        },
+        {
+            type: 'input',
+            name: 'email',
+            message: "Enter the Intern's email address (Required)",
+            validate: validateEmail,
+        },
+        {
+            type: 'input',
+            name: 'school',
+            message: "What school does the Intern attend? (Required)",
+            validate: schoolInput => {
+                if(schoolInput){
+                    return true;
+                } else {
+                    return "Please enter the Intern's school"
+                }
+            }
+        },
+        {
+            type: 'list',
+            name: 'team_list',
+            message: 'Add a team member.',
+            choices: ['Engineer', 'Intern', "Done"],
+        },
+    ])
+    .then((addMember) => {
+        addTeamMember(addMember);
+    });
+}
+
+managerPrompt();

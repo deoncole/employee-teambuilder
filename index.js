@@ -3,6 +3,8 @@ const inquirer = require('inquirer');
 const fs = require('fs');
 const Manager = require('./lib/Manager');
 const generatePage = require('./src/page-template');
+const Engineer = require('./lib/Engineer');
+const { type } = require('os');
 
 // function to validate the employee's id number in the prompt
 function validateId(idInput){
@@ -33,6 +35,7 @@ function validateEmail(emailInput){
  // constants to be used as empty arrays to hold the team member objects
  const engTeam = [];
  const internTeam = [];
+ let theManager = {};
 
  //function to add team member or quit
 function addTeamMember(addMember){
@@ -44,7 +47,9 @@ function addTeamMember(addMember){
             internPrompt(internTeam)
             break;
         default:
-            console.log('you are Done')
+            donePrompt()
+            // console.log('you are Done, check out index.html in the dist directory to see it!')
+            // console.log("Page created, check out index.html in the dist director to see it!")
             break;
     }
 };
@@ -91,16 +96,15 @@ const managerPrompt = () => {
         },
     ])
     .then((addMember) => {
-        const theManager = new Manager(addMember.name, addMember.id, addMember.email, addMember.number);
+        theManager = new Manager(addMember.name, addMember.id, addMember.email, addMember.number);
         addTeamMember(addMember);
-        return generatePage(theManager);
+        // return generatePage(theManager);
     })
-    .then(pageHTML => {
-        fs.writeFile('./dist/index.html', pageHTML, err =>{
-            if (err) throw new Error(err);
-            console.log("Page created, check out index.html in the dist director to see it!")
-        })
-    })
+    // .then(pageHTML => {
+    //     fs.writeFile('./dist/index.html', pageHTML, err =>{
+    //         if (err) throw new Error(err);
+    //     })
+    // })
 };
 
 // prompts to add a Engineer
@@ -159,18 +163,17 @@ const engineerPrompt = engTeam => {
         },
     ])
     .then((addMember) => {
-        const theEngineer = new Manager(addMember.name, addMember.id, addMember.email, addMember.number);
+        const theEngineer = new Engineer(addMember.name, addMember.id, addMember.email, addMember.github_username);
         engTeam.push(theEngineer);
         addTeamMember(addMember);
-        return generatePage(theEngineer);
+        // return generatePage(theEngineer);
     })
-    .then(pageHTML => {
-        pageHTML = fs.readFile('./dist/index.html', 'utf8')
-        fs.writeFile('./dist/index.html', pageHTML, err =>{
-            if (err) throw new Error(err);
-            console.log("Page created, check out index.html in the dist director to see it!")
-        })
-    })
+    // .then(pageHTML => {
+    //     pageHTML = fs.readFile('./dist/index.html', 'utf8')
+    //     fs.writeFile('./dist/index.html', pageHTML, err =>{
+    //         if (err) throw new Error(err);
+    //     })
+    // })
 };
 
 // prompts to add a Intern
@@ -232,6 +235,28 @@ const internPrompt = internTeam => {
         console.log(internTeam);
         addTeamMember(addMember);
     });
+}
+
+const donePrompt = madeTeam =>  {
+    inquirer.prompt([
+        {
+            type: 'confirm',
+            name: 'confirmFinish',
+            message: 'Are you finished building your team?',
+            default: true
+        }
+    ])
+    .then ((finished) => {
+        if(finished.confirmFinish){
+            return generatePage(theManager, engTeam)
+        }
+    })
+    .then(pageHTML => {
+        // pageHTML = fs.readFile('./dist/index.html', 'utf8')
+        fs.writeFile('./dist/index.html', pageHTML, err =>{
+            if (err) throw new Error(err);
+        })
+    })
 }
 
 managerPrompt();

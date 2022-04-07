@@ -3,6 +3,7 @@ const Manager = require('../lib/Manager');
 const Engineer = require('../lib/Engineer');
 const Intern = require('../lib/Intern');
 
+// function to create the manager HTML
 const createManager = managerObj => {
     return ` 
             <div class="card-body">
@@ -15,23 +16,26 @@ const createManager = managerObj => {
     `;
 }
 
+// function to create the engineer HTML. Use a for loop to loop through the created engineers
 const createEngineer = engineerObj => {
-
+    for (let i = 0; i<engineerObj.length; i++){
+        return `
+            <div class="card-body">
+                <h5 class="card-title">${engineerObj[i].name}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">Engineer</h6>
+                <h6 class="card-subtitle mb-2 text-muted">${engineerObj[i].id}</h6>
+                <a href="mailto:${engineerObj.email}" class="card-link">${engineerObj[i].email}</a>
+                <a href="${engineerObj[i].gitUserName}" class="card-link">${engineerObj[i].gitUserName}</a>
+            </div>
+        `;
+    }
 }
 
-module.exports = teamData => {
-    
-    // declare let variables to hold the different objects
-    let managerData = {};
-    let engineerData = {};
-    let internData = {};
-    }
-    console.log(teamData.constructor.name);
 
-    if (teamData.constructor.name === 'Manager'){
-        managerData = teamData; 
-    }
 
+module.exports = function (managerData, engineerData) {
+
+    // return the HTML
     return `
     <!DOCTYPE html>
     <html lang="en">
@@ -58,6 +62,15 @@ module.exports = teamData => {
                     </div>
                 </div>
             </div>
+            <div id="eng-section" class="container">
+            <div class="row">
+                <div class="col">
+                    <div class="card mt-4" style="width: 18rem;">
+                        ${createEngineer(engineerData)}
+                    </div>
+                </div>
+            </div>
+        </div>
         </div>
     </body>
 

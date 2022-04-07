@@ -1,6 +1,8 @@
 // create a constant that takes in the inquirer npm package
 const inquirer = require('inquirer');
-const manager = require('./lib/Manager');
+const fs = require('fs');
+const Manager = require('./lib/Manager');
+const generatePage = require('./src/page-template');
 
 // function to validate the employee's id number in the prompt
 function validateId(idInput){
@@ -89,7 +91,15 @@ const managerPrompt = () => {
         },
     ])
     .then((addMember) => {
+        const theManager = new Manager(addMember.name, addMember.id, addMember.email, addMember.number);
         addTeamMember(addMember);
+        return generatePage(theManager);
+    })
+    .then(pageHTML => {
+        fs.writeFile('./dist/index.html', pageHTML, err =>{
+            if (err) throw new Error(err);
+            console.log("Page created, check out index.html in the dist director to see it!")
+        })
     })
 };
 
@@ -149,10 +159,18 @@ const engineerPrompt = engTeam => {
         },
     ])
     .then((addMember) => {
-        engTeam.push(addMember);
-        console.log(engTeam);
+        const theEngineer = new Manager(addMember.name, addMember.id, addMember.email, addMember.number);
+        engTeam.push(theEngineer);
         addTeamMember(addMember);
-    });
+        return generatePage(theEngineer);
+    })
+    .then(pageHTML => {
+        pageHTML = fs.readFile('./dist/index.html', 'utf8')
+        fs.writeFile('./dist/index.html', pageHTML, err =>{
+            if (err) throw new Error(err);
+            console.log("Page created, check out index.html in the dist director to see it!")
+        })
+    })
 };
 
 // prompts to add a Intern

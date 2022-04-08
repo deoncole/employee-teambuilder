@@ -7,4 +7,4 @@
 ### install node, inquirer and jest packages before launching the application
 
 ## Link to walkthrough video
-[Application Walkthrough]()
+[Application Walkthrough](https://youtu.be/d-d7oGewa2U)

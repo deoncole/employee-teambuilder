@@ -1,10 +1,11 @@
-// create a constant that takes in the inquirer npm package
+// create a constant that takes in the inquirer npm package and the other constants to require the necessary nodes
 const inquirer = require('inquirer');
 const fs = require('fs');
-const Manager = require('./lib/Manager');
 const generatePage = require('./src/page-template');
+
+const Manager = require('./lib/Manager');
 const Engineer = require('./lib/Engineer');
-const { type } = require('os');
+const Intern = require('./lib/Intern');
 
 // function to validate the employee's id number in the prompt
 function validateId(idInput){
@@ -32,12 +33,13 @@ function validateEmail(emailInput){
     }
  };
 
- // constants to be used as empty arrays to hold the team member objects
- const engTeam = [];
- const internTeam = [];
+// let variable to hold the manager object
  let theManager = {};
+ // let variables to be used as empty arrays to hold the team member objects
+ let engTeam = [];
+ let internTeam = [];
 
- //function to add team member or quit
+ //function to add team member or quit using a switch statement taking in the prompts and checking what the user chose
 function addTeamMember(addMember){
     switch (addMember.next_to_add){
         case 'Engineer':
@@ -48,8 +50,6 @@ function addTeamMember(addMember){
             break;
         default:
             donePrompt()
-            // console.log('you are Done, check out index.html in the dist directory to see it!')
-            // console.log("Page created, check out index.html in the dist director to see it!")
             break;
     }
 };
@@ -95,16 +95,11 @@ const managerPrompt = () => {
             choices: ['Engineer', 'Intern', "Done"],
         },
     ])
+     // promise to take in the chosen field from the list. Create a new object and call the function to ask the user the for the next prompt
     .then((addMember) => {
         theManager = new Manager(addMember.name, addMember.id, addMember.email, addMember.number);
         addTeamMember(addMember);
-        // return generatePage(theManager);
     })
-    // .then(pageHTML => {
-    //     fs.writeFile('./dist/index.html', pageHTML, err =>{
-    //         if (err) throw new Error(err);
-    //     })
-    // })
 };
 
 // prompts to add a Engineer
@@ -162,18 +157,12 @@ const engineerPrompt = engTeam => {
             choices: ['Engineer', 'Intern', "Done"],
         },
     ])
+     // promise to take in the chosen field from the list. Create a new object and push it into the array. call the function to ask the user the for the next prompt
     .then((addMember) => {
-        const theEngineer = new Engineer(addMember.name, addMember.id, addMember.email, addMember.github_username);
-        engTeam.push(theEngineer);
+        const newEngineer = new Engineer(addMember.name, addMember.id, addMember.email, addMember.github_username);
+        engTeam.push(newEngineer);
         addTeamMember(addMember);
-        // return generatePage(theEngineer);
     })
-    // .then(pageHTML => {
-    //     pageHTML = fs.readFile('./dist/index.html', 'utf8')
-    //     fs.writeFile('./dist/index.html', pageHTML, err =>{
-    //         if (err) throw new Error(err);
-    //     })
-    // })
 };
 
 // prompts to add a Intern
@@ -230,14 +219,16 @@ const internPrompt = internTeam => {
             choices: ['Engineer', 'Intern', "Done"],
         },
     ])
+    // promise to take in the chosen field from the list. Create a new object and push it into the array. call the function to ask the user the for the next prompt
     .then((addMember) => {
-        internTeam.push(addMember);
-        console.log(internTeam);
+        const newIntern = new Intern(addMember.name, addMember.id, addMember.email, addMember.school);
+        internTeam.push(newIntern);
         addTeamMember(addMember);
     });
 }
 
-const donePrompt = madeTeam =>  {
+// prompt when the user selects done
+const donePrompt = () =>  {
     inquirer.prompt([
         {
             type: 'confirm',
@@ -247,16 +238,33 @@ const donePrompt = madeTeam =>  {
         }
     ])
     .then ((finished) => {
+        // conditional to check if user is done. If so write the new file to the dist folder
         if(finished.confirmFinish){
-            return generatePage(theManager, engTeam)
+            fs.writeFile('./dist/index.html', generatePage(theManager, engTeam, internTeam), err =>{
+                if (err) throw new Error(err);
+            })
+            console.log("Page created, check out index.html in the dist directory to see it!")
+        } else {
+            // if the user is not done run the prompt to add a new team member
+            chooseMemberPrompt();
         }
-    })
-    .then(pageHTML => {
-        // pageHTML = fs.readFile('./dist/index.html', 'utf8')
-        fs.writeFile('./dist/index.html', pageHTML, err =>{
-            if (err) throw new Error(err);
-        })
     })
 }
 
+// prompt to chose a member
+const chooseMemberPrompt = () =>{
+    inquirer.prompt([
+        {
+            type: 'list',
+            name: 'next_to_add',
+            message: 'Add a team member.',
+            choices: ['Engineer', 'Intern', "Done"],
+        }
+    ])
+    .then((addMember) => {
+        addTeamMember(addMember);
+    });
+}
+
+// call the function to execute the prompts
 managerPrompt();
